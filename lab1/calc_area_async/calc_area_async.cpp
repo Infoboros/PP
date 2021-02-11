@@ -11,7 +11,7 @@ figure generate_random_figure(int count_node) {
     point next_point;
 
     //0.017 для перевода в радианы
-    float rotate_angle = 360.f / (float)count_node * 0.017f;
+    float rotate_angle = 360.f / (float) count_node * 0.017f;
 
     for (int i = 0; i < count_node; ++i) {
         f.push_back(prev_point);
@@ -32,16 +32,26 @@ float get_square(figure f) {
     //S = 1/2 |E(yi*(xi+1 - xi-1))
     int n = f.size();
     float S = 0.0f;
-    for (int i = 0; i < n; ++i) {
-        int prev = i - 1;
-        if (prev < 0)
-            prev = n - 1;
 
-        int next = i + 1;
-        if (next == n)
-            next = 0;
+    #pragma omp parallel shared(f, n, S)
+    {
+        #pragma omp for
+        for (int i = 0; i < n; ++i) {
+            int prev = i - 1;
+            if (prev < 0)
+                prev = n - 1;
 
-        S += f[i].second * (f[next].first - f[prev].first);
+            int next = i + 1;
+            if (next == n)
+                next = 0;
+
+            float plusS = f[i].second * (f[next].first - f[prev].first);
+
+            #pragma omp critical
+            {
+                S += plusS;
+            }
+        }
     }
-    return S/2.f;
+    return S / 2.f;
 }
