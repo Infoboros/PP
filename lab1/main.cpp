@@ -1,5 +1,6 @@
 #include "calc_area_async/calc_area_async.h"
 #include <iostream>
+#include <string>
 #include <omp.h>
 
 void hand_mod() {
@@ -23,10 +24,18 @@ void hand_mod() {
     cout << "Square test figure: " << square << endl;
 }
 
-void async_test(int count_figures, int count_nodes) {
+void async_test() {
     vector<figure> figures;
     vector<float> results;
     vector<int> count_threads = {1, 2, 4, 8, 16};
+
+    int count_figures, count_nodes;
+    cout << "Input\n"
+            "Count figures: ";
+    cin >> count_figures;
+
+    cout << "Count nodes in figure: ";
+    cin >> count_nodes;
 
 
     figures.reserve(count_figures);
@@ -39,8 +48,7 @@ void async_test(int count_figures, int count_nodes) {
         results.reserve(count_figures);
 
         double time_start = omp_get_wtime();
-
-        #pragma omp parallel shared(figures, count_figures, results)
+        #pragma omp parallel default(none) shared(figures, count_figures, results)
         {
             #pragma omp for
             for (int i = 0; i < count_figures; ++i) {
@@ -55,29 +63,21 @@ void async_test(int count_figures, int count_nodes) {
 
         cout << "Count Thread = " << count_thread <<
              "; Time: " << (time_end - time_start) * 1000 << " ms\n";
-}
-
-}
-
-int main() {
-    cout << "Choice type work\n"
-            "Hand - 1\n"
-            "Test async - 2\n"
-            "$> ";
-    int input_flag;
-    cin >> input_flag;
-    if (input_flag == 1) {
-        hand_mod();
-    } else {
-        int count_figures, count_nodes;
-        cout << "Input\n"
-                "Count figures: ";
-        cin >> count_figures;
-
-        cout << "Count nodes in figure: ";
-        cin >> count_nodes;
-
-        async_test(count_figures, count_nodes);
     }
+
+}
+
+int main(int argc, char* argv[]) {
+
+    int input_flag = 0;
+
+    if ((argc > 1) && (string(argv[1]) == "-debug"))
+        input_flag = 1;
+
+    if (input_flag == 1)
+        hand_mod();
+    else
+        async_test();
+
     return 0;
 }
