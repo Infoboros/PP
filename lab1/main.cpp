@@ -48,17 +48,10 @@ void async_test() {
         results.reserve(count_figures);
 
         double time_start = omp_get_wtime();
-        #pragma omp parallel default(none) shared(figures, count_figures, results)
-        {
-            #pragma omp for
-            for (int i = 0; i < count_figures; ++i) {
-                float square = get_square(figures[i]);
-                #pragma omp critical
-                {
-                    results.push_back(square);
-                };
-            }
-        }
+        #pragma omp parallel for default(shared)
+        for (int i = 0; i < count_figures; ++i)
+             get_square(figures[i]);
+
         double time_end = omp_get_wtime();
 
         cout << "Count Thread = " << count_thread <<

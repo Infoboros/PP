@@ -30,28 +30,19 @@ figure generate_random_figure(int count_node) {
 float get_square(figure f) {
     //Формула площади Гаусса
     //S = 1/2 |E(yi*(xi+1 - xi-1))
-    int n = f.size();
-    float S = 0.0f;
+    int n = f.size(), i, prev, next;
+    float S = 0.0f, plus;
 
-    #pragma omp parallel shared(f, n, S)
-    {
-        #pragma omp for
-        for (int i = 0; i < n; ++i) {
-            int prev = i - 1;
-            if (prev < 0)
-                prev = n - 1;
+    #pragma omp parallel for reduction(+:S)
+    for (i = 0; i < n; ++i) {
+        int prev = i - 1;
+        if (prev < 0)
+            prev = n - 1;
 
-            int next = i + 1;
-            if (next == n)
-                next = 0;
-
-            float plusS = f[i].second * (f[next].first - f[prev].first);
-
-            #pragma omp critical
-            {
-                S += plusS;
-            }
-        }
+        int next = i + 1;
+        if (next == n)
+            next = 0;
+        S += f[i].second * (f[next].first - f[prev].first);
     }
     return S / 2.f;
 }
