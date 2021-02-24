@@ -6,13 +6,13 @@
 
 using namespace std;
 
-void swap_size_t(size_t &a, size_t &b){
+void swap_size_t(size_t &a, size_t &b) {
     size_t tmp = a;
     a = b;
     b = tmp;
 }
 
-void hand_mod(){
+void hand_mod() {
     cout << "Hello, it's debug mode." << endl;
 
     cout << "Input n and m to first nxm matrix: " << endl;
@@ -45,7 +45,7 @@ void hand_mod(){
     matrResult.printMatr();
 }
 
-void async_test(){
+void async_test() {
     cout << "Hello, it's test vector mode." << endl;
 
     size_t count_matrix;
@@ -81,12 +81,13 @@ void async_test(){
 
 }
 
-void async_mode(){
+void async_mode() {
     cout << "Hello, it's test time mode." << endl;
 
     size_t count_matrix;
     size_t n, m;
     vecMatr vector_matrix;
+    vector<int> count_threads = {1, 2, 4, 8, 16};
 
     cout << "Input count matrix (min 2): ";
     cin >> count_matrix;
@@ -107,17 +108,22 @@ void async_mode(){
         vector_matrix[i]->random_generate();
     }
 
-    for (int i = 0; i < count_matrix; ++i) {
-        vector_matrix[i]->printMatr();
-        cout << "===" << endl;
+    for (int count_thread: count_threads) {
+        omp_set_num_threads(count_thread);
+
+        double time_start = omp_get_wtime();
+        multMatrixs(vector_matrix);
+        double time_end = omp_get_wtime();
+
+        cout << "Count Thread = " << count_thread <<
+             "; Time: " << (time_end - time_start) * 1000 << " ms\n";
     }
-    multMatrixs(vector_matrix).printMatr();
 
     for (size_t i = 0; i < count_matrix; ++i)
         delete vector_matrix[i];
 }
 
-int main(int argc, char* argv[]) {
+int main(int argc, char *argv[]) {
 
     if ((argc > 1) && (string(argv[1]) == "-debug"))
         hand_mod();

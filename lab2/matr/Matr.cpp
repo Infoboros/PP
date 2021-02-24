@@ -41,10 +41,12 @@ Matr* operator*(Matr &m1, Matr &m2) {
 
     Matr *result = new Matr(n, k);
 
-    int c_i_j;
+    #pragma omp parallel for default(shared)
     for (size_t i = 0; i < n; ++i) {
+        #pragma omp parallel for default(shared)
         for (size_t j = 0; j < k; ++j) {
-            c_i_j = 0;
+            int c_i_j = 0;
+            #pragma omp parallel for reduction(+:c_i_j)
             for (size_t index_for_mult = 0; index_for_mult < m; ++index_for_mult) {
                 c_i_j += m1[i][index_for_mult] * m2[index_for_mult][j];
             }
@@ -68,11 +70,14 @@ Matr multMatrixs(vecMatr inVector) {
     while (inVector.size() != 1){
         size_t len = inVector.size();
         size_t tmp_len = len/2 + len%2;
+        size_t len_to_for = len - len%2;
         vecMatr tmpVec;
         tmpVec.resize(tmp_len);
-        for (size_t i = 0; i < (len - len%2); i+=2) {
+
+        #pragma omp parallel for default(shared)
+        for (size_t i = 0; i < len_to_for; i+=2) {
             Matr *tmpMatr = (*inVector[i]) * (*inVector[i+1]);
-            tmpVec[i] = tmpMatr;
+            tmpVec[i/2] = tmpMatr;
         }
 
         if(len%2)
