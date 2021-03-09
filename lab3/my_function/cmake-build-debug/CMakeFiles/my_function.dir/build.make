@@ -99,6 +99,8 @@ my_function_EXTERNAL_OBJECTS =
 
 my_function: CMakeFiles/my_function.dir/main.cpp.o
 my_function: CMakeFiles/my_function.dir/build.make
+my_function: /usr/lib/x86_64-linux-gnu/libmpichcxx.so
+my_function: /usr/lib/x86_64-linux-gnu/libmpich.so
 my_function: CMakeFiles/my_function.dir/link.txt
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/ouroboros/work/PP/lab3/my_function/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking CXX executable my_function"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/my_function.dir/link.txt --verbose=$(VERBOSE)
